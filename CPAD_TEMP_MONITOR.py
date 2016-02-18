@@ -5,9 +5,10 @@ import serial
 import time
 import pypyodbc
 
-# TODO: 1) ODBC module to link to SQL or MDB table for data storage
-#      2) Error handling and reporting. Will be run as service unattended.
-
+# ----------------------------------------------------------------------------
+# TODO: 	1) ODBC module to link to SQL or MDB table for data storage
+# 			2) Error handling and reporting. Will be run as service unattended.
+# ----------------------------------------------------------------------------
 
 CPAD_LOG_FILE_DIR = "C:\\CPAD_LOG\\"
 CPAD_LOG_FILE_NAME = "CPAD_LOG.TXT"
@@ -37,7 +38,8 @@ PKT_OPC_XTENDED = 31
 # Read buffer array
 ReadArr = [0x00] * 256
 
-def InitCOMPort():
+
+def init_com_port():
 	try:
 		ser = serial.Serial(PORT_NUM - 1, baudrate=PORT_BAUD)
 		return ser
@@ -45,8 +47,9 @@ def InitCOMPort():
 	except serial.serialutil.SerialException:
 		return 0
 
+
 # Function gets next byte from cPad port and returns it
-def ReadNextNum():
+def read_next_num():
 	global CPAD_ERROR_COUNT
 
 	try:
@@ -64,14 +67,14 @@ def ReadNextNum():
 
 	except:
 
-		WriteDataToErrorLog(CPAD_ERROR_LOG_FILE_DIR, CPAD_ERROR_LOG_FILE_NAME, str("General error"))
+		write_data_to_errorlog(CPAD_ERROR_LOG_FILE_DIR, CPAD_ERROR_LOG_FILE_NAME, str("General error"))
 
 
-def WriteCPadDataToLog(TargetPath, TargetFile, ParsedData):
+def write_cpad_data_to_log(TargetPath, TargetFile, ParsedData):
 	try:
 
-		# NOTE:  Sensor Name: ParsedData[0]
-		#       Temp: ParsedData[1]
+		# NOTE:Sensor Name: ParsedData[0]
+		# Temp: ParsedData[1]
 
 		# Write temperature + time and date to log file
 		with open(TargetPath + TargetFile, 'a') as DataFile:
@@ -92,30 +95,29 @@ def WriteCPadDataToLog(TargetPath, TargetFile, ParsedData):
 				DataFile.write(ParsedData[1] + '\n')
 
 			else:
-				WriteDataToErrorLog(CPAD_ERROR_LOG_FILE_DIR, CPAD_ERROR_LOG_FILE_NAME,
+				write_data_to_errorlog(CPAD_ERROR_LOG_FILE_DIR, CPAD_ERROR_LOG_FILE_NAME,
 									str(ParsedData[0] + ParsedData[0] + '\n'))
 
 	except IOError:
 		pass
 
 
-def WriteDataToErrorLog(TargetPath, TargetFile, ErrorMessage):
+def write_data_to_errorlog(targetpath, targetfile, errormessage):
 	try:
-		with open(TargetPath + TargetFile, 'a') as DataFile:
-			DataFile.write(time.strftime("%X") + ":" + time.strftime("%x") + ":" + ErrorMessage + '\n')
+		with open(targetpath + targetfile, 'a') as DataFile:
+			DataFile.write(time.strftime("%X") + ":" + time.strftime("%x") + ":" + errormessage + '\n')
 
 	except IOError:
 
 		pass
 
+ser = init_com_port()
 
-ser = InitCOMPort()
-
-if (ser != 0):
+if ser != 0:
 
 	ReadIndex = 0
 
-	# Loop continuosly while data is read and logged
+	# Loop continuously while data is read and logged
 	while 1:
 
 		ReadIndex += 1
@@ -143,15 +145,15 @@ if (ser != 0):
 
 				# Read the message
 				while DataIndex < DataSize - 1:
-					NextByte = ReadNextNum()
-					DataString = DataString + chr(NextByte)
+					NextByte = read_next_num()
+					DataString += chr(NextByte)
 
 					DataIndex += 1
 
 				# Split into string array to separate sensor name and temperature value strings
 				ParsedData = DataString.split()
 
-				WriteCPadDataToLog(CPAD_LOG_FILE_DIR, CPAD_LOG_FILE_NAME, ParsedData)
+				write_cpad_data_to_log(CPAD_LOG_FILE_DIR, CPAD_LOG_FILE_NAME, ParsedData)
 
 else:
-	WriteDataToErrorLog(CPAD_ERROR_LOG_FILE_DIR, CPAD_ERROR_LOG_FILE_NAME, str("COM Port failed to initialize"))
+	write_data_to_errorlog(CPAD_ERROR_LOG_FILE_DIR, CPAD_ERROR_LOG_FILE_NAME, str("COM Port failed to initialize"))
