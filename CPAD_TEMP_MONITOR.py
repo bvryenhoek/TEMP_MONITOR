@@ -6,8 +6,9 @@ import time
 import pypyodbc
 
 # ----------------------------------------------------------------------------
-# TODO: 	1) ODBC module to link to SQL or MDB table for data storage
-# 			2) Error handling and reporting. Will be run as service unattended.
+# TODO:
+# 1) ODBC module to link to SQL or MDB table for data storage
+# 2) Error handling and reporting. Will be run as service unattended.
 # ----------------------------------------------------------------------------
 
 CPAD_LOG_FILE_DIR = "C:\\CPAD_LOG\\"
@@ -62,7 +63,7 @@ def read_next_num():
 			print("serial port exists")
 
 		if CPAD_ERROR_COUNT == 0:
-			WriteDataToErrorLog(CPAD_ERROR_LOG_FILE_DIR, CPAD_ERROR_LOG_FILE_NAME, str("COM Port read failed"))
+			write_data_to_errorlog(CPAD_ERROR_LOG_FILE_DIR, CPAD_ERROR_LOG_FILE_NAME, str("COM Port read failed"))
 			CPAD_ERROR_COUNT = 1
 
 	except:
@@ -129,13 +130,13 @@ if ser != 0:
 			ReadIndex = 0
 
 			# Get Opcode value, 1st after throwaway bytes
-			Opcode = ReadNextNum()
+			Opcode = read_next_num()
 
 			# ASCII message incoming
 			if Opcode == PKT_OPC_XTENDED:
 
 				# Byte after Opcode is byte count for ASCII message.
-				DataSize = ReadNextNum() + 1
+				DataSize = read_next_num() + 1
 
 				# Prepare to read ASCII bytes
 				DataIndex = 0
