@@ -71,20 +71,20 @@ def read_next_num():
 		write_data_to_errorlog(CPAD_ERROR_LOG_FILE_DIR, CPAD_ERROR_LOG_FILE_NAME, str("General error"))
 
 
-def write_cpad_data_to_log(TargetPath, TargetFile, ParsedData):
+def write_cpad_data_to_log(targetpath, targetfile, parseddata):
 	try:
 
 		# NOTE:Sensor Name: ParsedData[0]
 		# Temp: ParsedData[1]
 
 		# Write temperature + time and date to log file
-		with open(TargetPath + TargetFile, 'a') as DataFile:
+		with open(targetpath + targetfile, 'a') as DataFile:
 
 			# Only write sensor values as comma-delimited. System messages will be processed differently.
-			if ParsedData[0] in (CPAD_SENSOR_T1, CPAD_SENSOR_T2, CPAD_SENSOR_T3):
+			if parseddata[0] in (CPAD_SENSOR_T1, CPAD_SENSOR_T2, CPAD_SENSOR_T3):
 
 				# TargetFile.write("Sensor,")
-				DataFile.write(ParsedData[0] + ',')
+				DataFile.write(parseddata[0] + ',')
 
 				# TargetFile.write("Date,")
 				DataFile.write(time.strftime("%x") + ',')
@@ -97,7 +97,7 @@ def write_cpad_data_to_log(TargetPath, TargetFile, ParsedData):
 
 			else:
 				write_data_to_errorlog(CPAD_ERROR_LOG_FILE_DIR, CPAD_ERROR_LOG_FILE_NAME,
-									str(ParsedData[0] + ParsedData[0] + '\n'))
+									str(parseddata[0] + parseddata[0] + '\n'))
 
 	except IOError:
 		pass
