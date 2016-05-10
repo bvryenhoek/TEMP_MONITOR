@@ -102,16 +102,6 @@ def write_cpad_data_to_log(targetpath, targetfile, parseddata):
 	except IOError:
 		pass
 
-def write_cpad_data_to_db (parseddata):
-
-	try:
-
-
-	except:
-
-		pass
-
-
 def write_data_to_errorlog(targetpath, targetfile, errormessage):
 	try:
 		with open(targetpath + targetfile, 'a') as DataFile:
